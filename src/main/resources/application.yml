@@ -1,0 +1,35 @@
+# MONGODB CONFIGURATION
+spring:
+  data:
+    mongodb:
+      authentication-database: admin
+      username: rootuser
+      password: rootpass
+      database: musicdb
+      port: 27017
+      host: localhost
+
+
+# OAUTH CLIENT
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: e98ff8b5138f6ea1e958
+            client-secret: e83a36dc9f796f0fd20617e8ef73f6b535337b3c
+            redirect-uri: http://localhost:8080/login/oauth2/code/github
+            scope:
+              - user:email
+              - read:user
+
+          google:
+            client-id: 928924756934-pj0uev5a7e2rbuudtpo3cdppla5hni5t.apps.googleusercontent.com
+            client-secret: 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
+
+aws:
+  region: eu-central-1
+  s3:
+    buckets:
+      music-bucket: music-app-s3
+
