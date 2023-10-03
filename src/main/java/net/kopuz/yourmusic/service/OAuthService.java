@@ -62,7 +62,7 @@ public class OAuthService {
 
     public String getUserId(OAuth2User oauth2User) {
         try{
-            String oauthUserId = oauth2User.getAttribute("id");
+            String oauthUserId = oauth2User.getAttribute("id").toString();
             return oauthUserId;
 
         } catch (Exception e){

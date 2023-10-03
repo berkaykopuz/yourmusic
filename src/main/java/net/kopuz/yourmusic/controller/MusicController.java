@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping( "/api")
 public class MusicController {
     private final MusicService musicService;
 
@@ -21,12 +21,12 @@ public class MusicController {
         this.musicService = musicService;
     }
 
-    @GetMapping(name = "/music")
+    @GetMapping("/music")
     public ResponseEntity<List<MusicDto>> getAllMusics(){
         return new ResponseEntity<>(musicService.getAllMusics(), HttpStatus.OK);
     }
 
-    @PostMapping(name = "/music/add")
+    @PostMapping("/music/add")
     public ResponseEntity<MusicDto> saveMusic(@AuthenticationPrincipal OAuth2User oAuth2User,
                                               @RequestParam("title") String title,
                                               @RequestParam("artist") String artist,
