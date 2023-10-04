@@ -28,7 +28,7 @@ public class MusicController {
         return new ResponseEntity<>(musicService.getAllMusics(), HttpStatus.OK);
     }
 
-    @PostMapping("/music/add")
+    @PostMapping("/music/upload")
     public ResponseEntity<MusicDto> saveMusic(@AuthenticationPrincipal OAuth2User oAuth2User,
                                               @RequestParam("title") String title,
                                               @RequestParam("artist") String artist,

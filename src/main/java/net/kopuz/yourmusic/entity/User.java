@@ -12,7 +12,7 @@ import java.util.Collection;
 @Document(collection = "user")
 public class User {
     @Id
-    private int id;
+    private String id;
     @Indexed(unique = true)
     private String username;
 
@@ -31,7 +31,7 @@ public class User {
         this.oauthProvider = oauthProvider;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
