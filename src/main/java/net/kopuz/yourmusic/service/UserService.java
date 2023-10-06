@@ -1,6 +1,7 @@
 package net.kopuz.yourmusic.service;
 
 import net.kopuz.yourmusic.entity.User;
+import net.kopuz.yourmusic.exception.UserNotFoundException;
 import net.kopuz.yourmusic.repository.UserRepository;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,14 +37,14 @@ public class UserService {
     }
 
     public String getIdByOAuthId(String oauthUserId){
+        String id = userRepository.findIdByOauthUserId(oauthUserId);
 
-        try{
-            String id = userRepository.findIdByOauthUserId(oauthUserId);
-            return id;
+        if(id.isEmpty()){
+            throw new UserNotFoundException("user with [%s] not found".formatted(oauthUserId));
         }
-        catch(Exception e){
-            throw e;
-        }
+
+        return id;
+
 
     }
 

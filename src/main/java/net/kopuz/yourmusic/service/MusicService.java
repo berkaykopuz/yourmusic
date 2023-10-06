@@ -4,8 +4,12 @@ import net.kopuz.yourmusic.config.S3Buckets;
 import net.kopuz.yourmusic.dto.MusicDto;
 import net.kopuz.yourmusic.entity.Music;
 import net.kopuz.yourmusic.entity.User;
+import net.kopuz.yourmusic.exception.FileNotFoundException;
+import net.kopuz.yourmusic.exception.MusicNotFoundException;
 import net.kopuz.yourmusic.repository.MusicRepository;
 import net.kopuz.yourmusic.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -20,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class MusicService {
+    private static final Logger log = LoggerFactory.getLogger(MusicService.class);
     private final MusicRepository musicRepository;
     private final UserRepository userRepository;
     private final UserService userService;
@@ -42,10 +47,13 @@ public class MusicService {
             List<MusicDto> musicDtos = musicList.stream()
                     .map(music -> MusicDto.convert(music))
                     .collect(Collectors.toList());
+            log.info("all musics have listed");
             return musicDtos;
+
         }
         else{
-            throw new IllegalArgumentException();
+            log.warn("has not found any music");
+            throw new MusicNotFoundException("has not found any music.");
         }
 
     }
@@ -54,7 +62,7 @@ public class MusicService {
         Optional<Music> music = musicRepository.findById(id);
         return music.map(musicObject -> {
             return MusicDto.convert(musicObject);
-        }).orElseThrow();
+        }).orElseThrow(() -> new MusicNotFoundException("music with [%s] id has not found".formatted(id)));
     }
 
     public String getTitleById(String id) throws Exception {
@@ -76,11 +84,13 @@ public class MusicService {
 
         uploadMusicFile(id, file, fileId);
 
+        log.info("music has saved successfully");
         return MusicDto.convert(musicRepository.save(music));
     }
 
     public void uploadMusicFile(String userId, MultipartFile file, String fileId){
         try{
+            log.info("music uploaded to s3 bucket");
             s3Service.putS3Object(
                     s3Buckets.getBucket(),
                     "musics/%s/%s".formatted(userId, fileId),
@@ -98,10 +108,20 @@ public class MusicService {
                     s3Buckets.getBucket(),
                     "musics/%s/%s".formatted(music.get().getUserId(), music.get().getFileId())
             );
-            return musicFile;
+
+            if(musicFile != null){
+                log.info("music has returned to user");
+                return musicFile;
+            }
+            else{
+                log.warn("file has not found");
+                throw new FileNotFoundException("file has not found");
+            }
+
         }
         else{
-            throw new RuntimeException("User not found");
+            log.warn("music has not found");
+            throw new MusicNotFoundException("music with [%s] id not found.".formatted(id));
         }
     }
 
@@ -113,14 +133,12 @@ public class MusicService {
             updatedMusic.get().setArtist(music.getArtist());
             updatedMusic.get().setUpdatedTime(LocalDateTime.now());
 
+            log.info("music has updated successfully");
             return MusicDto.convert(musicRepository.save(updatedMusic.get()));
         }
         else{
-            throw new UsernameNotFoundException("");
+            throw new MusicNotFoundException("music with [%s] id not found".formatted(id));
         }
-
-
-
     }
 
 }

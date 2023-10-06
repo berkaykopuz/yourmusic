@@ -38,5 +38,10 @@ aws:
     buckets:
       music-bucket: music-app-s3
 
+#LOGGING LEVEL
+logging:
+  level:
+    root: warn
+
 
 

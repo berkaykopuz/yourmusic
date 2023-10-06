@@ -42,7 +42,7 @@ public class OAuthConfig {
                 String email = oAuth2User.getAttribute("email");
 
 
-                if(email == null){
+                if(email==null){
                     email = oAuthService.getEmailFromGithub(token);
                 }
 
