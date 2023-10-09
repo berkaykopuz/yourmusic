@@ -26,16 +26,12 @@ import java.util.stream.Collectors;
 public class MusicService {
     private static final Logger log = LoggerFactory.getLogger(MusicService.class);
     private final MusicRepository musicRepository;
-    private final UserRepository userRepository;
-    private final UserService userService;
     private final OAuthService oAuthService;
     private final S3Service s3Service;
     private final S3Buckets s3Buckets;
 
-    public MusicService(MusicRepository musicRepository, UserRepository userRepository, UserService userService, OAuthService oAuthService, S3Service s3Service, S3Buckets s3Buckets) {
+    public MusicService(MusicRepository musicRepository, OAuthService oAuthService, S3Service s3Service, S3Buckets s3Buckets) {
         this.musicRepository = musicRepository;
-        this.userRepository = userRepository;
-        this.userService = userService;
         this.oAuthService = oAuthService;
         this.s3Service = s3Service;
         this.s3Buckets = s3Buckets;
@@ -53,7 +49,7 @@ public class MusicService {
         }
         else{
             log.warn("has not found any music");
-            throw new MusicNotFoundException("has not found any music.");
+            throw new MusicNotFoundException("has not found any music");
         }
 
     }
@@ -72,17 +68,17 @@ public class MusicService {
 
     public MusicDto saveMusic(String title, String artist, OAuth2User oAuth2User, MultipartFile file){
 
-        String id = oAuthService.getUserId(oAuth2User);
+        String userId = oAuthService.getUserId(oAuth2User);
         String fileId = UUID.randomUUID().toString();
 
         Music music = new Music();
         music.setTitle(title);
         music.setArtist(artist);
         music.setUpdatedTime(LocalDateTime.now());
-        music.setUserId(id);
+        music.setUserId(userId);
         music.setFileId(fileId);
 
-        uploadMusicFile(id, file, fileId);
+        uploadMusicFile(userId, file, fileId);
 
         log.info("music has saved successfully");
         return MusicDto.convert(musicRepository.save(music));
@@ -90,7 +86,7 @@ public class MusicService {
 
     public void uploadMusicFile(String userId, MultipartFile file, String fileId){
         try{
-            log.info("music uploaded to s3 bucket");
+            log.info("music has uploaded to s3 bucket");
             s3Service.putS3Object(
                     s3Buckets.getBucket(),
                     "musics/%s/%s".formatted(userId, fileId),
