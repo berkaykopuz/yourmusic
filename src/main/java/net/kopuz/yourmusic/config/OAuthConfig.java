@@ -46,7 +46,7 @@ public class OAuthConfig {
                     email = oAuthService.getEmailFromGithub(token);
                 }
 
-                userService.saveOrUpdateOauthUser(username, email, oauthUserId, oauthProvider);
+                userService.saveOAuthUser(username, email, oauthUserId, oauthProvider);
 
             }
 

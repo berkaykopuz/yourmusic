@@ -18,18 +18,19 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public void saveOrUpdateOauthUser(String username,String email,String oauthUserId, String oauthProvider){
+    public void saveOAuthUser(String username,String email,String oauthUserId, String oauthProvider){
         Optional<User> existUser = userRepository.findByOauthUserId(oauthUserId);
 
         if(existUser.isPresent()){
             return;
         }
         else{
-            User user = new User();
-            user.setUsername(username);
-            user.setEmail(email);
-            user.setOauthUserId(oauthUserId);
-            user.setOauthProvider(oauthProvider);
+            User user = new User(
+                    username,
+                    email,
+                    oauthUserId,
+                    oauthProvider
+            );
 
             userRepository.save(user);
         }
@@ -44,7 +45,6 @@ public class UserService {
         }
 
         return id;
-
 
     }
 
