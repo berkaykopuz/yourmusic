@@ -1,28 +1,65 @@
 version: "3.8"
+
 services:
   mongodb:
     image: mongo
-    container_name: musicdb
+    container_name: mongodb
+    hostname: mongo
     ports:
-      - 27017:27017
+      - "27017:27017"
     volumes:
       - data:/data
     environment:
       - MONGO_INITDB_ROOT_USERNAME=rootuser
       - MONGO_INITDB_ROOT_PASSWORD=rootpass
+    networks:
+      - spring
+
   mongo-express:
     image: mongo-express
     container_name: mongo-express
     restart: always
     ports:
-      - 8081:8081
+      - "8081:8081"
     environment:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=rootuser
       - ME_CONFIG_MONGODB_ADMINPASSWORD=rootpass
-      - ME_CONFIG_MONGODB_SERVER=musicdb
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    depends_on:
+      - mongodb
+    networks:
+      - spring
+
+  yourmusic:
+    image: yourmusic:latest
+    container_name: yourmusic
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATA_MONGODB_.HOST=mongodb
+    depends_on:
+      - mongodb
+      - mongo-express
+    networks:
+      - spring
+    build: .
+
+  prometheus:
+    image: prom/prometheus:v2.35.0
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./data/prometheus/config:/etc/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    networks:
+      - spring
+
 volumes:
   data: {}
 
 networks:
-  default:
-     name: mongo_network
+  spring:
+    driver: bridge

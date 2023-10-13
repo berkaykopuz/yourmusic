@@ -1,12 +1,13 @@
 package net.kopuz.yourmusic;
 
-import net.kopuz.yourmusic.controller.MusicController;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 
 @SpringBootApplication
-@ComponentScan(basePackages = "net.kopuz.yourmusic.*")
 public class YourmusicApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(YourmusicApplication.class, args);
