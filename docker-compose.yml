@@ -40,6 +40,8 @@ services:
     depends_on:
       - mongodb
       - mongo-express
+    extra_hosts:
+      - "host.docker.internal:127.0.0.1"
     networks:
       - spring
     build: .
@@ -53,7 +55,7 @@ services:
     volumes:
       - ./data/prometheus/config:/etc/prometheus
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--config.file=/etc/prometheus/prometheus.yaml"
     networks:
       - spring
 
@@ -62,4 +64,3 @@ volumes:
 
 networks:
   spring:
-    driver: bridge
